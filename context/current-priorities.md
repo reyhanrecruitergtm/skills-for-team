@@ -1,22 +1,22 @@
 # Current Priorities
 
-_Last updated: 2026-03-11_
+_Last updated: 2026-05-09_
 
 ---
 
-1. **YouTube Channel Launch** -- Working with 2 video editors on first and second videos. Channel needs to be ready for launch.
+1. **Claude + AI Implementations as #1 Sales Angle** -- Best-converting positioning right now. Every piece of content, every proposal, every sales conversation leads with "we install Claude + AI inside your recruitment agency." Talent placement is no longer part of the public pitch.
 
-2. **DFY OutboundOS Quality** -- Delivering quality DFY setups for OutboundOS (proprietary DFY lead gen engine). 4-week timelines per client.
+2. **DFY 90-Day Pilots Quality** -- BD / Sourcing / Content engines. Where the new money is coming from. 3-month engagement per client with weekly reporting. Salar leads BD/Sourcing fulfilment; Daniyal leads Content + Claude builds.
 
-3. **Skool Community Engagement** -- Improving content quality and engagement inside the Skool community. Daily inbox check and response to member queries.
+3. **YouTube Channel Launch** -- Working with 2 video editors on first and second videos. Channel needs to be ready for launch.
 
-4. **GTM Academy Placement Quality** -- Ensuring placed GTM Engineers and Ops Managers meet client expectations. Active risk: client dissatisfaction, replacement requests, refunds.
+4. **Skool Community Engagement** -- Daily inbox check and response to member queries. Weekly Q&A every Wednesday 4:40 PM UK (Salar leads).
 
-5. **SA Junior Recruiter Sourcing** -- Ramping up junior recruiter placements from South Africa. 2 clients already closed but Robyn isn't hitting the "Elite" quality bar yet.
+5. **LinkedIn Content Velocity** -- Weekly LinkedIn content is taking too long. Target: 5x per week. All content frames Claude/AI for recruitment, not talent placement.
 
-6. **LinkedIn Content Velocity** -- Weekly LinkedIn content is taking too long. Target: 5x per week. Currently a time drain.
+6. **GTM Engine Management SOPs** -- Retainer clients are the only confirmed recurring MRR. SOPs are critical to scale. Salar owns BD/Sourcing SOPs; Daniyal owns Content + Claude build SOPs.
 
-7. **GTM Engine Management SOPs** -- 2 retainer clients just started with Shmookh. No uniform documentation yet. This is the only confirmed recurring revenue stream (~$2k/client/mo) -- SOPs are critical to scale it.
+7. **OutboundOS-Claude Validation** -- New skill (`/outbound-os-claude`) being tested with Ozgur. Claude-native replacement for Clay-based pipeline. Validates whether Claude-Code-DFY tier can be fulfilled without a Clay subscription on the client side.
 
 ---
 
@@ -24,4 +24,4 @@ _Last updated: 2026-03-11_
 - LinkedIn content creation needs a repeatable system, not one-off effort
 - Sales proposals are taking 60-90 min per lead (70% is standard content -- needs a template/skill)
 - All sales follow-ups are currently manual -- should be automated
-- Discovery call notes are being manually copied from Gemini/Fireflies into Attio and Notion
+- Discovery call notes are being manually copied from Gemini/Fireflies into Attio and Pulse

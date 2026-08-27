@@ -1,0 +1,53 @@
+# OutboundOS-Claude — Per-Client Config Template
+# Copy this file to clients/<slug>.yaml and fill in.
+
+client:
+  slug: ""              # short identifier, also folder name under data/clients/
+  name: ""              # full name
+  company: ""           # client's company
+  niche: ""             # e.g. "executive search — fintech"
+  tier: ""              # "claude-code-dfy" | "pilot" | "community"
+  start_date: ""        # YYYY-MM-DD
+
+llm:
+  provider: "anthropic"
+  plan: "claude-max"    # claude-max | api-key | parent-cc-session
+  notes: ""
+
+enrichment:
+  # Lock to exactly 2 sources. Keep the stack lean.
+  source_1:
+    name: ""            # apollo | crustdata | apify | peopledatalabs | prospeo | fullenrich
+    env_var: ""         # e.g. APOLLO_API_KEY
+    use_for: ""         # "company_discovery" | "people_search" | "email_enrichment" | "linkedin_scrape"
+  source_2:
+    name: ""
+    env_var: ""
+    use_for: ""
+
+icp:
+  industries: []
+  headcount_min: 0
+  headcount_max: 0
+  geo: []
+  inclusion_keywords: []
+  exclusion_keywords: []
+  decision_maker_titles: []
+
+playbooks:
+  # Pick from: hiring | leadership_change | low_hr_ratio | job_change_90d | talent_replacement
+  selected: []
+
+send_tools:
+  email: ""             # instantly | none
+  linkedin: ""          # heyreach | none
+
+tam:
+  estimated_size: 0
+  monthly_band: 0       # TAM ÷ 3
+  rotation_label: "(1/3 TAM)"
+
+intelligence:
+  path: "data/clients/<slug>/intelligence/learnings.jsonl"
+
+slack_channel: ""       # client Slack channel for approvals & reporting

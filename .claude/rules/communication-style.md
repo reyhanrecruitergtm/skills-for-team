@@ -13,8 +13,12 @@
 2. **Setup** -- 1-2 lines max. One sentence per line. White space is structural.
 3. **Body** -- problem → old way → new way, or story with real specifics (names, numbers, timelines)
 4. **CTA** -- always. Comment keyword, DM, or book a call. Point to first comment.
-5. **Sign-off block** -- always ends with:
+5. **Sign-off block** -- ALWAYS preceded by a `——` separator on its own line (two hyphens typed together with NO space between them, which renders as `——`), then the sign-off:
+   > ——
+   >
    > "I'm Reyhan Khan, I post about how I help recruitment businesses install GTM Systems & GTM Engineers allowing their offers to stand out. If you want to follow the journey more closely, the newsletter link is in the first comment."
+
+   The `——` separator before the footer is mandatory on every post. Not `--` with a space, not a single hyphen — the joined `——`.
 
 ### Formatting Rules
 - One sentence per line, almost always
@@ -53,6 +57,12 @@
 ---
 
 ## Reyhan's Current Sign-Off (as of 2026-04-16)
-"I'm Reyhan Khan, I post about how we help recruitment businesses install GTM Systems & Claude Code allowing their offers to stand out. If you want to follow the journey more closely, the newsletter link is in the first comment."
+Always put a `——` on its own line immediately before the sign-off (two hyphens typed together, no space between them), e.g.:
+
+```
+——
+
+I'm Reyhan Khan, I post about how we help recruitment businesses install GTM Systems & Claude Code allowing their offers to stand out. If you want to follow the journey more closely, the newsletter link is in the first comment.
+```
 
 Note: Updated April 16 2026. Changed "GTM Engineers" to "Claude Code" in sign-off. Earlier posts used "COO at Remote Assistants" -- that's an old role. Always use the current RecruiterGTM sign-off.

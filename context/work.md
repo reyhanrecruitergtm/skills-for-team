@@ -9,61 +9,54 @@ Recognize RecruiterGTM, GTM Academy, and The Ops Agent Lda. as "Us."
 
 ## Revenue Streams
 
-### 1. RecruiterGTM Skool Community
-Three tiers, all with 12 months of community access:
+_Order reflects current priority. The 90-day DFY pilots are where most of the new money is coming from and are the public-facing offer._
 
-**Standard -- $1,497 (one-time)**
-- 12 months community access + weekly live Q&A calls
-- OutboundOS (DFY Lite install)
-- 1:1 Systems Roadmap call (60 min)
-- Website Audit + Discounted Lovable Website
-- Discounted offshore hire ($3k for members)
+### 1. DFY 90-Day Pilots (Primary Revenue Engine)
+Claude + AI implementation pilots for recruitment agencies. Each pilot installs ONE engine and runs for 90 days with weekly reporting calls.
 
-**Premium -- $4,497 (one-time)**
-- Everything in Standard
-- 1 DFY Offshore Placement OR DFY OutboundOS system
-- 30-60-90 day growth calls (3 sessions)
-- Custom KPI Dashboard Setup
+Three engines:
+- **Business Development (Outbound) Pilot** — Claude AI Ops Manager + outbound stack (Instantly + HeyReach) + intent-based campaigns. Goal: 5–10 value-based DM conversations per month with key decision-makers.
+- **Sourcing Pilot** — SourcingOS engine + candidate enrichment + intent signals + ATS integration. Goal: 30–50 candidate conversations per month.
+- **Content Pilot** — ContentOS engine + LinkedIn content engine + ContentGPS + Claude setup + social listening. Goal: 50k–100k impressions, 25k reach per month.
 
-**VIP -- $8,497 (one-time)**
-- Everything in Premium
-- DFY Beehive Newsletter Setup
-- 1 DFY GTM Engineer or Jr Recruiter Placement
-- 14-Day Implementation Sprint
-- 8 weeks of 1:1 Strategic Support
-- Discount on Lisbon Mastermind
+Pricing: retained managed services — book a call CTA, no public pricing on the website. Standard managed pilot benchmark $2,500/mo (per memory).
 
-### 2. GTM Academy (Talent + Systems)
-- $4,497 one-time fee
-- Sourcing, pre-training, and placing talent into agencies
-- Includes 6 months of support post-placement
-- Roles placed: GTM Engineer, Operations Manager, Junior Recruiter, RecruiterOS Operator
-- Upgrade Track: training and certifying existing VAs into GTM Engineers
-- SLA: candidate list within 48 hours of payment
+Fulfillment lead: Salar (BD/Sourcing) and Daniyal (Content).
+
+### 2. RecruiterGTM Skool Community
+Standard tier: $1,497 one-time, 12 months access. Weekly live Q&A. Community deliverables locked per `feedback_community_three_value_props.md`: Claude AI Ops Manager + 1st Intent-Based BD Campaign + Website/SEO. (Premium $4,497 tier deprecated per `feedback_no_premium_tier.md`.)
 
 ### 3. GTM Engine Management Retainers
 - ~$2,000/month per client (recurring)
-- Managed by Shmookh
-- Currently 2 active clients -- only confirmed recurring MRR source
+- Active retainer clients managed alongside the 90-day pilots
+- Confirmed recurring MRR source
 
 ### 4. Affiliates
-- Setup Clay, Lemlist, HeyReach for clients using affiliate links
-- Passive revenue attached to fulfillment
+- Setup Clay, Instantly, HeyReach, Apollo, Apify, Pin.com, etc. for clients using affiliate links
+- ~10% of revenue
+- Passive revenue attached to fulfilment
+
+### 5. Offshore Talent Placement (now a public offer)
+- Public, promotable offer again as of 2026-07-15 (reversing the old back-end-only rule) — **Noroze is Talent Manager**, owning delivery + quality.
+- Placeable **standalone** (GTM Engineers, Ops Managers, recruiters/VAs) or bundled into pilot fulfilment.
+- Can be featured on LinkedIn, YouTube, website, proposals, and sales — see `feedback_talent_placement_now_public.md`.
 
 ---
 
 ## Revenue & Growth
-- **Current MRR:** $10,000 – $15,000/month
-- **Target:** $30,000/month
-- **Primary levers:** GTM Academy sales + DFY fulfillment + retainer growth
+- **Current MRR:** ~$30,000/month (April 2026 actual)
+- **Active retainers:** 7
+- **Skool community members:** 87 (updated 2026-08-24)
+- **Target (Q2 2026):** $60,000/month by end of Q2 — close 5 new retainers in May + 5 in June, hold 4 offshore placements/month
+- **Primary levers:** retainer close velocity (proposals → close in <14 days) + community sales + offshore placement margin
 
 If a task doesn't support one of these three levers, flag it as "Low Priority."
 
 ---
 
 ## Key Deliverable SLAs
-- **DFY OutboundOS Setup:** 4-week timeline. Weekly client check-ins (discovery → Clay data → copy approval → launch)
-- **GTM Academy Placement:** Candidate list within 48 hours of payment. Contract signing: days to 2 weeks depending on client pace.
+- **DFY 90-Day Pilots:** 4-week build sprint inside a 3-month engagement. Weekly client reporting call. Month 1 = build + launch, Month 2 = optimise + test, Month 3 = validate + scale.
+- **Talent Placement:** Candidate list within 48 hours of payment. Contract signing: days to 2 weeks depending on client pace. Standalone or bundled; Noroze owns delivery.
 
 ---
 
@@ -71,18 +64,20 @@ If a task doesn't support one of these three levers, flag it as "Low Priority."
 | Tool | Purpose |
 |------|---------|
 | Attio | CRM -- Source of Truth for all deals |
-| Notion | Project management + documentation |
-| Slack | Internal/team communication |
+| Pulse | Task management + content calendar (our own SaaS; replaced Notion 2026-07-19) |
+| Slack | Internal + client comms (every pilot client gets a Slack channel) |
 | LinkedIn | Content + outreach |
+| Claude Code | Core implementation tool — every pilot installs a Claude AI Ops Manager |
 | n8n | Automation workflows |
-| Clay | Data enrichment |
-| Lemlist | Email/LinkedIn outreach |
+| Clay | Data enrichment (default for standard pilots; `outbound-os-claude` skill replaces it for Claude-Code-DFY tier) |
+| Instantly | Cold email sending — current default |
+| HeyReach | LinkedIn outreach — current default |
+| Apify | LinkedIn scraping + URL verification |
+| Apollo | Company / people enrichment |
 | Google Workspace | Email + calendar |
 | Lovable | Client website builds |
-| Claude Code | Terminal/dev work |
-| Gemini | Personal assistant |
 
-No MCP servers connected yet.
+(Lemlist retired as the default, see `reference_tool_stack.md`.)
 
 ---
 
@@ -96,6 +91,22 @@ Full module breakdowns live in `references/business-model.md`. Summary:
 | SourcingOS | AI-powered candidate sourcing and productised recruiting offers | Live |
 | ContentOS | LinkedIn + YouTube authority system | Live -- 7 modules |
 | OperatorOS | Backend ops, SOPs, fulfillment systems, custom Claude Code setups | Live |
+
+---
+
+## The 5 RecruiterGTM Pillars
+
+The canonical 5 service / support pillars RecruiterGTM is built around. Use these in every proposal, content piece, sales conversation, and 12-month community support framing.
+
+1. **AI Layer** — Custom Claude Ops Manager + skill library + MCP integrations to the client's stack. Replaces manual operator work with AI-native workflows.
+2. **Multichannel Outbound** — Email + LinkedIn + voice / dialer outbound engine. Intent-based playbooks, niche-specific copy, sequence + reply handling.
+3. **Content + Authority** — LinkedIn presence built around the operator. Content frameworks (ContentGPS, social listening), Claude-assisted drafting, Beehiiv newsletter for nurture, repurposing into short-form. (Newsletter moved here from the ATS pillar, 2026-07-16.)
+4. **ATS + Database** — Clean ATS as the source of truth. Database segmentation. Capture pages. Re-engagement of past candidates and clients.
+5. **Productization** — Offer structure, pricing, side-by-side comparison decks. Move from contingent-only to retained / fractional / subscription tiers where the niche supports it.
+
+Reference memory: `reference_recruitergtm_5_pillars.md`.
+
+---
 
 ## Client Testimonials (GTM Academy)
 Stored in `references/business-model.md`. Key social proof:

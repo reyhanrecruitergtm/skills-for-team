@@ -4,6 +4,50 @@ Guide Reyhan through a full DFY OutboundOS GTM Engine setup for a client — fro
 
 ---
 
+## Locked Rules
+
+### A. Skill invocation
+- A1. ALWAYS use this skill (or follow its Phase 1 format) for any Clay table — TAM config, candidate config, playbook setup. Never freehand Clay tables. The skill produces the correct Clay-ready format (comma-separated filter keywords), not a descriptive table.
+- A2. When the Clay Agent Plugin is installed (see "Clay Agent Plugin" section below), EXECUTE builds directly in Clay from Claude Code instead of handing Reyhan a manual checklist. The Phase 2 client-approval checkpoint still gates enrichment — never trigger credit-burning enrichment runs before sign-off.
+
+### B. BD scope = ONE campaign (90-day pilot)
+- B1. Pilot BD deliverable = ONE multichannel campaign. We scope the ICP, build the playbook, write the copy, set it up inside the client's existing outbound tool (Lemlist / SourceWhale / Instantly / HeyReach), push it live, run the launch.
+- B2. Month 2 = A/B test what's not converting. Month 3 = cut losers, scale winners. The campaign keeps running on the client's stack after the pilot — they own it.
+- B3. NEVER promise: multiple parallel campaigns, ongoing weekly campaign builds, volume increases beyond one playbook, "we'll keep launching new campaigns for you", specific conversation/meeting targets in the contract.
+- B4. Second campaign / expansion / new niche later = separate scope + separate fee. Frame as upsell after pilot, never as base scope.
+
+### C. Tech stack audit (Week 1)
+- C1. Every email, proposal, or call answer about tools must include the tech stack audit framing. Standard offer: detailed audit triggered the moment they join, written recommendation within Week 1 across 3 buckets — Keep, Let go, Invest in.
+- C2. Principle: clients should not pay anything extra. Get max bang for buck on what they already pay for. Surface tools they already own with overlapping features (Apollo + Clay + Sales Nav simultaneously, ATS with built-in features they ignore, etc.).
+- C3. NEVER recommend keeping or replacing a specific tool without auditing first. Frame audit as value-add, not extra cost.
+- C4. Add this language to every welcome email, proposal tools section, and Q&A reply. "Tech stack audit + keep/cut/invest recommendations" is a community deliverable.
+
+---
+
+## Clay Agent Plugin (Claude Code) — added 2026-07-10
+
+Clay released an official **API + CLI + Agent Plugin** on 2026-07-09 (first launch of their "summer of launches"). It lets Claude Code search Clay data (companies + people), run enrichment Functions, query tables, and create / edit / trigger Workflows directly — no more copying configs into the Clay UI by hand. Available on all Clay plans, new and legacy.
+
+**Correct repo:** `github.com/clay-run/agent-plugins` (docs: `developers.clay.com`).
+⚠️ Do NOT confuse with `github.com/clay-run/clay-cli` — that is an unrelated 2017 FaaS project that happens to share the org name.
+
+**One-time install (Reyhan runs these in Claude Code v2.1.91+):**
+```
+/plugin marketplace add clay-run/agent-plugins
+/plugin install clay@clay-plugins
+```
+Then run the bundled `clay:setup` skill, authenticate with `clay login`, and **restart Claude Code** (an already-running MCP server won't see a login that happened after it launched).
+
+**How it changes this skill's phases:**
+- **Phase 1 (TAM Build):** instead of outputting a config checklist for manual entry, run the company search in Clay directly from the parsed intake doc, and report back the REAL TAM count (no more estimates).
+- **Phase 2 (Client Review):** unchanged — approval still gates everything downstream (rule A2).
+- **Phase 4 (Playbook Config):** build the tables, enrichment waterfalls, and workflows via the plugin after approval, instead of writing setup instructions.
+- **Phase 4B (Verification):** unchanged and still mandatory before any export.
+
+Existing Clay MCP connector tools (find-and-enrich, query-objects, run-subroutine, get-credits-available) remain available and complement the plugin — use `get-credits-available` to check credit budget before any enrichment run.
+
+---
+
 ## When to Use
 
 - Reyhan says "help me set up OutboundOS for [client]"

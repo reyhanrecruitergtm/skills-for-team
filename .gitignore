@@ -1,32 +1,6 @@
-# Environment / credentials
 .env
-.env.local
-.mcp.json
-
-# Local Claude Code overrides
-CLAUDE.local.md
-.claude/settings.local.json
-
-# Runtime
-.claude/scheduled_tasks.lock
-.claude/worktrees/
-.claude/agent-memory/
-.claude/projects/
-
-# Personal memory (each user builds their own)
-memory/
-
-# Client data (each user's own)
-projects/
-research/
-archives/
-content/
-contracts/
-decisions/
-
-# Dependencies
-node_modules/
-
-# OS
 .DS_Store
-**/.DS_Store
+__pycache__/
+*.pyc
+*.csv
+*.xlsx

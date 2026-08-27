@@ -125,19 +125,20 @@ Contact titles:         Head of Employer Brand, Director of Talent Acquisition, 
 
 Use waterfall enrichment when a single data provider won't fill all rows. Clay tries providers in order and stops when data is found.
 
-**Standard contact email waterfall (cheapest to richest):**
-1. Clay native (free with plan)
-2. Prospeo (if own API key connected — reduces credit cost)
-3. Hunter.io
-4. Apollo
-5. Clearbit
+**Standard contact email waterfall (LOCKED 2026-05-24 — Prospeo PRO plan, 15k credits/mo at zero cost):**
+1. **Prospeo** (own API key, PRO plan) — primary. 15k free credits/mo via content partnership, burn them first.
+2. **Apollo** (own API key) — second pass for whatever Prospeo missed. Highest match rate on US/EU B2B work emails.
+3. **Apify** (LinkedIn scrape) — third pass for LinkedIn URLs that neither resolved.
+4. SalesQL (own API key) — fourth fallback for personal email + direct dial.
+5. Findymail / Hunter.io — last-resort paid waterfall step.
+6. Clay native — only if all own-key sources miss.
 
 **Standard company data waterfall:**
 1. Clay native LinkedIn enrichment
 2. Clearbit (company details, tech stack, headcount)
 3. Bombora (intent data — enterprise only)
 
-> Rule: Always put own API keys (Prospeo, OpenAI) first to reduce Clay data credit spend.
+> Rule: Apollo + Prospeo run first (own keys, near-zero cost). Prospeo PRO gives us 15k credits/month via the content partnership — burn them, don't hoard. Memory: `reference_prospeo_api.md`.
 
 ---
 

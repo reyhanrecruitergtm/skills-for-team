@@ -47,7 +47,7 @@ Always reference these tools when building sequences or recommending infrastruct
 | Email outreach | Lemlist |
 | Automation | n8n |
 | CRM | Attio |
-| Project management | Notion |
+| Project management | Pulse |
 
 ---
 

@@ -1,10 +1,27 @@
 # Graphic Generation Skill
 
-Generate LinkedIn post graphics as HTML files with embedded SVG for RecruiterGTM.
+Generate LinkedIn post graphics for RecruiterGTM.
 
 ---
 
-## How It Works
+## CHOOSE THE RIGHT ENGINE FIRST (read before anything)
+
+There are TWO graphic engines. Picking the wrong one produces garbage.
+
+| If the graphic is… | Use | Why |
+|---|---|---|
+| **An illustration / mascot / character / scene / anything that should look "designed" or "drawn"** (e.g. "Claude wearing a headset", a logo personified, a concept illustration) | **Nano Banana — `mcp__gemini-image__generate_image`** (Gemini 2.5 Flash Image) | Hand-coded SVG of a character ALWAYS looks stiff and amateur. Image models are built for this. |
+| **A data / diagram / system graphic** — the variation-10 solar-system hub, power bars, tool→skill maps, stat cards, list grids | **HTML + inline SVG** (the rest of this skill) | Precise layout, exact text, charts. SVG is right here. |
+
+**Hard rule (flagged 2026-06-22):** never hand-code SVG for an illustrated/mascot concept. Reyhan rejected hand-built SVG mascots — correctly. Default illustration work to Nano Banana.
+
+**Nano Banana usage:** `mcp__gemini-image__generate_image`, `aspect_ratio: "4:5"`, save to `~/Desktop/linkedin-graphics/*.png`. Write rich art direction (subject, style, lighting, palette, composition, negative space). Text renders unreliably — leave space and overlay copy after, or regenerate.
+
+**Known blocker:** the `gemini-image` key needs **billing enabled** — free tier = 0 image requests/day, returns HTTP 429 `limit: 0`. If you hit that, STOP and flag it; do NOT fall back to hand-coded SVG for an illustration.
+
+---
+
+## How It Works (HTML/SVG engine — for data/diagram graphics only)
 
 Graphics are built as self-contained HTML files with inline SVG. This gives full control over gradients, glow effects, bezier curves, segmented bars, and precise typography. Output opens directly in the browser for review and can be screenshotted or exported for LinkedIn.
 

@@ -6,15 +6,183 @@ This is the internal execution engine behind RecruiterGTM's SourcingOS managed s
 
 ---
 
+## Locked Rules
+
+### A. URL verification (mandatory before any export)
+- A1. Every LinkedIn URL HTTP-verified before including in any CSV, campaign, or proposal table. 200 = valid, 999 = LinkedIn rate-limit (usually still valid, flag for manual check), anything else = broken.
+- A2. After generating any CSV with LinkedIn URLs, run the verification script. Fix or remove invalid URLs before handing the file to Reyhan.
+- A3. Also check for CSV column alignment — empty fields with commas can shift columns and put podcast names in URL fields (real bug, real CSV that went to Lemlist).
+- A4. Applies to: Lemlist campaign CSVs, proposal candidate/company tables, any export with LinkedIn links.
+
+### B. Candidate links (cross-cuts with proposal-generator J4)
+- B1. Candidate tables use personal LinkedIn (`linkedin.com/in/`) URLs. Company tables use company LinkedIn (`linkedin.com/company/`) URLs. NEVER mix.
+- B2. If candidates legitimately lack personal profiles (blue-collar workers), label the column "Employer" and note explicitly that these are employer pages.
+
+---
+
 ## How to Invoke
 
 Say `/sourcing-os` followed by a target firm, niche, or sourcing brief.
 
 Examples:
+- `/sourcing-os run waterfall on this JD: [paste JD or URL] — target 200 candidates`
 - `/sourcing-os scrape https://www.weil.com/people — SF and NY offices, all lawyers`
 - `/sourcing-os enrich lawyers from weil_lawyers.json — find LinkedIn + personal emails`
 - `/sourcing-os generate emails for Weil lawyers based on their deals and news`
-- `/sourcing-os full pipeline — [firm URL] — [offices/filters] — [output sheet URL]`
+
+---
+
+## Waterfall v2 — Pin-First Sourcing (PRIMARY MODE)
+
+The default path when given a JD or job role. End-to-end: JD in → Google Sheet of 200–500 qualified candidates out, scored against criteria with personalised hooks. This replaces the per-firm scraping path for any sourcing brief that starts as a role (not a firm directory).
+
+### The waterfall (per candidate) — LOCKED 2026-05-24
+
+| Layer | Tool | What it adds |
+|-------|------|-------------|
+| 1 | **Pin.com** (MCP) | Name, title, company, location, LinkedIn URL, Pin match score |
+| 2 | **Prospeo** (own API key, PRO plan — 15k credits/mo at zero cost) | Primary email enrichment from LinkedIn URL → verified email. Burn freely. Memory: `reference_prospeo_api.md`. CLI: `.claude/skills/prospeo/prospeo.py` |
+| 3 | **Apollo** (MCP) | Second pass for whatever Prospeo missed — work email, personal email, phone, current employment metadata |
+| 4 | **Apify Google Search** | Third pass — cross-validate LinkedIn URL if Pin's missing/stale, or scrape profile bio for additional context |
+| 5 | **SalesQL** *(planned)* | Fourth fallback for personal email + direct dial when all three above miss |
+| 6 | **Web research** (Apify + Exa) | Recent posts, awards, news, deals — fuel for the hook |
+| 7 | **Claude qualifier** | Score against each must-have criterion (✓/✗), overall fit /10, 1-line personalised hook |
+
+### The volume engine (per role, to hit 200–500)
+
+Pin returns 10 per `get_candidates`. Claude is the human-in-the-loop replacement:
+
+1. `create_job` from JD (or `scrape_job_description` if URL)
+2. `get_candidates` → 10 candidates
+3. Claude auto-triages each vs criteria → strong fit / weak fit / reject
+4. **`reject_candidate`** for weak fits with reasons — teaches Pin's recalibrator
+5. **DO NOT call `accept_candidate`** — it triggers Pin's auto-email which we don't want. Save strong fits to the sheet only. We use our own Lemlist outreach.
+6. `recalibrate_search` every 2–3 batches with the rejection signals
+7. Loop until target hit (20 calls = 200 candidates, 50 calls = 500)
+
+### The qualifier (per candidate)
+
+Claude reads:
+- The JD's must-haves (auto-extracted) + nice-to-haves
+- The candidate's bio, title, company, tenure, LinkedIn activity (when Apify pulled it)
+
+Outputs:
+- One column per criterion: ✓ / ✗ / ?
+- Overall fit score 1–10
+- 1-line hook in Reyhan's voice (Tom & Jon proposal style — references something specific)
+- Disqualification reason (if score < 4)
+
+### Output sheet columns
+
+| Name | Title | Company | Location | LinkedIn | Pin Score | Crit 1 | Crit 2 | Crit 3 | Crit 4 | Crit 5 | Fit /10 | Work Email | Personal Email | Phone | Hook line 1 | Hook line 2 | Included? | Drop reason | Source |
+
+Filterable, sortable, ready for Instantly / HeyReach / Lemlist import.
+
+### HARD RULE — Inclusion Gate (replaces per-email approval)
+
+To be added to ANY outreach campaign, a candidate row MUST have BOTH:
+
+1. **At least one contact channel** — work email OR personal email OR LinkedIn URL (any one)
+2. **At least one custom hook line** — a 1- or 2-line opener tailored to them (Tom & Jon proposal style — references something specific they did, said, built, or signed)
+
+If a row is missing EITHER, mark `Included?` = NO with the drop reason and skip. Never fabricate.
+
+**Empty fields are fine.** If we can't find a phone number, leave it blank. If we can't find a specific deal, leave it blank. We never invent data to fill a gap. The inclusion rule guarantees that every row that DOES make it into a campaign has the minimum needed for a real touchpoint with a real personalisation hook.
+
+This rule replaces per-email approval. We don't ask the client to approve every send. The bar is the inclusion gate — pass it and the email goes; fail it and the row is dropped.
+
+### Approval flow (per role)
+
+- **First list per role: manual review.** We send the sheet to the client (Slack channel), they review the hooks + criteria scoring, give the green light, we launch.
+- **After 1-2 lists are approved and trust is built: automated.** Subsequent lists for the same role go straight to Instantly / HeyReach with no client approval — the inclusion rule does the gating.
+- **Always:** flag rows where the personalisation source was thin (e.g. only a generic firm bio, no recent deal/post). Client reviews these before send even after we automate.
+
+### HARD RULES — Credit Discipline (READ BEFORE ANY RUN)
+
+Pin and Apollo both burn credits per call. Always:
+
+1. **Confirm target count + budget with Reyhan BEFORE any production run.** Default cap: 200 candidates per test job unless explicitly raised.
+2. **Test runs default to 50 candidates, NOT 200–500.** Production volume only after a test pass is approved.
+3. **Pin recalibrate cap: 5 cycles per job.** More than that means the JD is too narrow — go back to Reyhan, don't keep burning credits.
+4. **Apollo enrichment runs ONCE per candidate, after Claude qualifier has scored fit ≥ 6.** Never enrich rejects.
+5. **Dedupe by LinkedIn URL before any enrichment call** — Pin and existing internal data may overlap.
+6. **Keep a credit ledger.** Log Pin batches, Apollo lookups, Apify compute per run in `projects/sourcing-os/credit_ledger.csv` so we can track ROI per role.
+7. **Never `accept_candidate`** — Pin's auto-outreach must stay off. Reject the weak fits, save the strong fits to the sheet only.
+
+### Build artefacts (planned location)
+
+- `projects/sourcing-os/run_waterfall.py` — the loop runner (Pin → Prospeo → Apollo → Apify → Claude → Sheet)
+- `projects/sourcing-os/credit_ledger.csv` — credit consumption log
+- `projects/sourcing-os/jobs/{job_id}/` — per-job artefacts (JD, criteria, candidates, sheet URL)
+
+### When NOT to use Pin-first
+
+- Brief is "scrape this firm directory" (e.g. Weil law firm) → use the firm-scraping path below
+- Specialist executive search where Pin coverage is thin → Apify + Apollo first, Pin as secondary check
+- Highly niche / new emerging roles where Pin's index hasn't caught up
+
+---
+
+## Exa Find-Similar (added 2026-06-05)
+
+New layer in the waterfall when you have ONE ideal candidate and want lookalikes based on what they've actually done (papers, talks, GitHub, blog posts, conference pages), not just LinkedIn headline. Especially useful for:
+
+- Niche or emerging roles where Pin / Apollo coverage is thin.
+- Senior placements where the best candidates don't optimise LinkedIn.
+- "Find me 30 more engineers like the one I just placed" — fastest fill mechanism for the 4 evergreen role pipelines.
+
+### How to invoke
+
+```bash
+python3 projects/exa-tools/find_similar_candidates.py \
+  --seed-url <ideal candidate LinkedIn or personal site URL> \
+  --role "<role label>" \
+  --count 30 \
+  --slug <client-or-role-slug>
+```
+
+Output drops to `~/Desktop/sourcing-runs/<slug>__YYYY-MM-DD.csv` (+ matching `.json`). Every LinkedIn URL HTTP-verified before write per Rule A1.
+
+### Where it sits in the waterfall
+
+Use as **Layer 0** (before Pin) when a brief comes in as "fill more of these" rather than "fill this JD". Feed the Exa output's LinkedIn URLs into the existing Pin / Apollo / Apify enrichment passes — Exa supplies discovery, the existing waterfall supplies verified contact data.
+
+### When NOT to use Exa Find-Similar
+
+- Brief is a clean JD with no seed candidate yet → stay on Pin-first.
+- Brief is a firm directory scrape → still use Apify.
+- Volume push of 500+ — Exa is per-query priced; Pin scales cheaper for bulk.
+
+### Setup
+
+One-time: paste Exa API key into `.env` as `EXA_API_KEY=...`. See `projects/exa-tools/README.md` for details.
+
+---
+
+## Exa TAM Builder (added 2026-06-05)
+
+Same `projects/exa-tools/` folder also includes `tam_builder.py` for **proposal TAM tables** — solves the recurring problem of generating verified 10-20-row decision-maker tables for `proposal-generator` (cross-cuts with that skill, not SourcingOS-specific). Use when:
+
+- A proposal needs a TAM table for a niche where prior research stalled.
+- A SourcingOS client brief asks for the **decision-maker side** of their market (e.g. for John Randolph: Managing Partners at sub-150 CPA firms).
+
+```bash
+python3 projects/exa-tools/tam_builder.py \
+  --niche "<niche brief>" \
+  --target "<target titles>" \
+  --count 15 \
+  --slug <client-slug>
+```
+
+### Open questions to resolve before first run
+
+These need Reyhan's answer before the build:
+
+1. **Test JD** — which role do we test against?
+2. **Target count for first test** — 50 (default) or higher?
+3. **Apollo credit budget** — confirm cap before bulk enrichment.
+4. **Output Drive folder** — which Drive folder gets the sheet?
+5. **SalesQL key** — when ready, paste API key so we can wire Layer 4.
 
 ---
 
@@ -60,15 +228,23 @@ The 5 SourcingOS deliverables, automated:
 
 ## Architecture
 
-### Data Sources (Current)
+### Data Sources (Current — Pin.com is PRIMARY)
+
+Priority order for any new sourcing brief:
+
+1. **Pin.com (PRIMARY)** — job-role candidate search via MCP. Use first when the brief is a job role.
+2. **Apify** — firm directory scraping + Google `site:linkedin.com/in` search for missing LinkedIn URLs.
+3. **Apollo** — verified work email, personal email, phone.
+4. **Web research** — news, deals, awards, signals (for the personalisation layer).
+
 | Source | What It Gets | API/Method |
 |--------|-------------|------------|
+| **Pin.com** | Ranked candidates against a job role, with accept/reject feedback loop | MCP server `https://mcp.pin.com/mcp` — see Pin.com Integration section below |
 | **Target firm website** | Name, title, office, bio, practice areas, education, deals, news | Sitemap + requests/BS4 scraping |
 | **Apify Google Search** | LinkedIn profile URLs | `apify/google-search-scraper` — `site:linkedin.com/in` queries |
 | **Apollo** | Verified work email, personal email, phone | `apollo_people_match` MCP tool — name + company + LinkedIn URL |
 | **Apify LinkedIn Scraper** | Full LinkedIn profile data, contact info | `apify/linkedin-profile-scraper` (or similar actor) |
-| **Pin.com** | Candidate database, ATS-connected profiles | [PENDING — MCP integration] |
-| **Weil/firm news pages** | Deal announcements, awards, thought leadership | Direct scraping of news/insights sections |
+| **Firm news pages** | Deal announcements, awards, thought leadership | Direct scraping of news/insights sections |
 
 ### Data Sources (Planned)
 | Source | What It Gets | Status |
@@ -184,20 +360,117 @@ Most large law firm websites follow similar patterns:
 
 ---
 
-## Pin.com Integration [PENDING]
+## Pin.com Integration [LIVE — PRIMARY SOURCE]
 
-**Status:** Messaged Pin team for MCP server URL. They confirmed MCP exists but only showed ATS connection options in the UI.
+Pin.com is the **primary candidate source** for SourcingOS. Pin is job-role-driven, not person-search-driven — you create a job, Pin returns ranked candidates, you accept/reject, Pin recalibrates. Use this lane first; fall back to Apify + Apollo only when Pin runs dry or for fields Pin doesn't expose (personal email, news/deals, signals).
 
-**What Pin.com adds:**
-- Candidate database search by criteria
-- ATS-connected candidate profiles
-- Potentially pre-enriched contact data
+### Connection
 
-**Next steps:**
-1. Get MCP server URL or npm package from Pin team
-2. Get API key / auth format
-3. Add to `.claude/settings.local.json` as MCP server
-4. Build Pin.com search + enrichment into Phase 2
+- **MCP URL:** `https://mcp.pin.com/mcp`
+- **Transport:** Custom connector (SSE-based)
+- **Auth:** OAuth — authenticate Pin account against Claude
+
+### Setup (Antigravity / Claude Desktop)
+
+1. Customize → "+" icon → "Add custom connector"
+2. Name: `pin`
+3. URL: `https://mcp.pin.com/mcp`
+4. Authenticate Pin with Claude
+5. Set tool permissions to "always allow" (Pin recommends this)
+
+### Available MCP Tools
+
+**Search management**
+| Tool | What it does |
+|------|-------------|
+| `create_job` | Initiates candidate search using job title + description (+ optional company name/website) |
+| `scrape_job_description` | Extracts title, location, description from a job board URL |
+| `modify_search` | Adjusts search criteria using natural language |
+| `recalibrate_search` | Applies accept/reject feedback to generate an improved next batch |
+| `list_jobs` | Returns active searches, filterable by job title |
+
+**Candidate review & actions**
+| Tool | What it does |
+|------|-------------|
+| `get_candidates` | Returns up to 10 ranked unreviewed candidates per search |
+| `accept_candidate` | Moves candidate into Pin's outreach sequence with auto-email |
+| `reject_candidate` | Declines candidate + sources replacement; accepts structured or free-text rejection reasons |
+
+### Two Use Cases
+
+**Use Case A — Pull candidates against a job role (PRIMARY)**
+This is Pin's native mode. Use it whenever the brief is "find candidates for [role]".
+
+**Use Case B — Look up a specific person**
+Pin has no direct person-lookup endpoint. Workaround: `create_job` with a description tightly scoped to that person's profile (current title + company + niche skills), then scan `get_candidates` results for the name. If they don't appear, fall back to Apify Google search (`site:linkedin.com/in "Name" "Company"`).
+
+---
+
+## Pin.com Scenario Walkthrough — Senior Property Manager (San Francisco)
+
+Concrete example. Client is a property management recruitment agency. The brief: "Senior Property Manager, San Francisco, 5+ years residential, AppFolio or Yardi, 200+ unit portfolios."
+
+**Step 1 — Create the job**
+```
+mcp__pin__create_job(
+  title: "Senior Property Manager",
+  description: "5+ years managing residential property portfolios in SF Bay Area. Familiar with AppFolio or Yardi. Track record of 200+ unit portfolios. Strong tenant relationship skills.",
+  company: "(client's company name, optional)"
+)
+→ Returns: job_id
+```
+
+**Step 2 — First batch of candidates**
+```
+mcp__pin__get_candidates(job_id: <id>)
+→ Returns: 10 ranked candidates with name, current title, current company, location, LinkedIn URL, Pin's match score
+```
+
+**Step 3 — Review with Reyhan / client**
+- Render the 10 in a table
+- Reyhan accepts 4, rejects 6 with reasons ("too junior", "wrong asset class", "out of region")
+
+**Step 4 — Apply feedback + pull next batch**
+```
+mcp__pin__recalibrate_search(job_id: <id>, ...feedback...)
+mcp__pin__get_candidates(job_id: <id>)
+→ Next 10 candidates, now closer to the target
+```
+
+Repeat steps 3–4 until the shortlist hits the target size (typically 30–50 across the role).
+
+**Step 5 — Accept candidates → Pin auto-outreach**
+```
+mcp__pin__accept_candidate(candidate_id)
+→ Pin moves them into its sequence with the configured auto-email
+```
+
+**Step 6 — Cross-enrich beyond Pin (RecruiterGTM layer)**
+Pin's auto-email is generic. For tier-1 candidates, override with our own personalised outreach:
+- Apollo for personal email + phone (Pin returns work email; we want both)
+- Apify Google search for LinkedIn cross-validation
+- News/deal/awards matching from firm pages, LinkedIn activity, public mentions
+- Claude drafts the email + LinkedIn message in the founder's voice
+
+**Step 7 — Output**
+- Google Sheet row per candidate: name, current title, company, location, LinkedIn, work email, personal email, phone, signal, deal/news matched, personalised email draft, personalised LinkedIn message
+- For tier-1: bespoke outreach goes out via Lemlist (overriding Pin's auto-email)
+- For tier-2/3: leave Pin's auto-email running
+
+### When to use Pin first vs firm-scraping first
+
+| Situation | Source order |
+|-----------|-------------|
+| Brief is a job role (any niche) | Pin → Apollo → web research |
+| Brief is "scrape this firm" (e.g. Weil law firm directory) | Apify firm scrape → Apollo → Pin (only for cross-reference) |
+| Blue-collar / construction / trades / field-staff | Pin → Apify → Apollo (Pin Indexes blue-collar talent well — see tools audit decisions) |
+| Highly specialist / executive search where Pin coverage is thin | Apify + Apollo first, Pin as secondary check |
+
+### Credit / cost discipline
+
+- `get_candidates` and `recalibrate_search` consume Pin lookup credits per batch
+- Always confirm with Reyhan before running more than 3 recalibration loops on a single job
+- Apollo enrichment is also credit-billed — only run after Pin's accept_candidate decision, never on raw `get_candidates` output
 
 ---
 

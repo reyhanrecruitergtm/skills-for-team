@@ -34,7 +34,7 @@ Every reply falls into one of 6 categories. Classify first, then act.
 - Reply within 2 hours (same business day at minimum)
 - Do NOT send a Calendly link immediately — confirm their interest first with one question
 - Move to Attio as a live opportunity
-- Tag in Notion as "Meeting to book"
+- Create a Pulse task "Meeting to book — {lead}" on the client's retainer
 
 **Draft response template:**
 ```
@@ -52,7 +52,7 @@ Are you free [day] or [day] this week for 20 minutes?
 
 **Action:**
 - Acknowledge with no pressure
-- Set a Notion reminder for the date they mentioned (or 60 days if vague)
+- Set a Pulse task due on the date they mentioned (or 60 days if vague)
 - Keep in sequence for a future nurture campaign
 
 **Draft response template:**
@@ -131,7 +131,7 @@ I'll reach out to [Name] directly. Thanks again, [Name].
 **Signals:** One-word reply / emoji / out-of-office / auto-reply
 
 **Action:**
-- If OOO: Note return date in Notion, follow up when they're back
+- If OOO: Pulse task due on their return date, follow up when they're back
 - If emoji/one-word: Treat as mild interest, send a short follow-up
 - If auto-reply: No action needed
 
@@ -153,7 +153,7 @@ DRAFT RESPONSE:
 [Ready-to-send reply]
 
 CRM ACTION:
-[What to update in Attio / Notion]
+[What to update in Attio / Pulse]
 ```
 
 ---

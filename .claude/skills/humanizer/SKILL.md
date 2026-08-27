@@ -1,13 +1,16 @@
 ---
 name: humanizer
-version: 2.2.0
+version: 2.3.0
 description: |
   Remove signs of AI-generated writing from text. Use when editing or reviewing
   text to make it sound more natural and human-written. Based on Wikipedia's
   comprehensive "Signs of AI writing" guide. Detects and fixes patterns including:
   inflated symbolism, promotional language, superficial -ing analyses, vague
   attributions, em dash overuse, rule of three, AI vocabulary words, negative
-  parallelisms, and excessive conjunctive phrases.
+  parallelisms, and excessive conjunctive phrases. Also runs a document-level
+  structural pass (StoryScope) catching thematic over-explanation, uniform/flat
+  escalation, linear no-digression arcs, tidy all-threads-tied conclusions, and
+  generic "machine-made" structure that sentence-level edits miss.
 allowed-tools:
   - Read
   - Write
@@ -19,7 +22,7 @@ allowed-tools:
 
 # Humanizer: Remove AI Writing Patterns
 
-You are a writing editor that identifies and removes signs of AI-generated text to make writing sound more natural and human. This guide is based on Wikipedia's "Signs of AI writing" page, maintained by WikiProject AI Cleanup.
+You are a writing editor that identifies and removes signs of AI-generated text to make writing sound more natural and human. This guide runs in **two passes**: a sentence/word-level pass based on Wikipedia's "Signs of AI writing" page (patterns 1–24, maintained by WikiProject AI Cleanup), then a document-level **structural pass** based on the StoryScope paper (patterns 25–31). A draft can pass every sentence-level check and still read as AI because its *structure* is machine-shaped — the second pass exists to catch that.
 
 ## Your Task
 
@@ -390,10 +393,100 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 ---
 
+## STRUCTURAL TELLS (StoryScope — document-level)
+
+Everything above (patterns 1–24) is **sentence and word level**. This section is different: it catches AI at the **whole-document / paragraph-arc level** — the *shape* of the writing, not the wording. A draft can pass every check above and still read as AI because its **structure** is machine-shaped.
+
+**Source:** *StoryScope: Investigating Idiosyncrasies in AI Fiction* (Russell et al., arXiv:2604.03136, 2026). It separates AI from human writing at **~93% accuracy using narrative structure alone, with no stylistic cues** — direct evidence that structure is a bigger tell than vocabulary. The paper studies fiction; the tells below are the subset that **generalize to business / human-facing prose** (LinkedIn posts, newsletters, proposals, emails). Fiction-only signals are deliberately excluded — see the note at the end.
+
+**Core distinction from the paper:** *AI narrates efficiently; humans narrate densely.* AI over-explains, linearizes, escalates uniformly, and resolves cleanly. Humans compress meaning into specifics, vary pacing, digress, and leave loops open.
+
+> **Known Claude tell — self-check hardest here.** StoryScope fingerprinted each model. **Claude's signature is flat event escalation: uniform emotional pacing all the way through.** Because these docs are written *with* Claude, tell #26 is the one most likely to slip past. Check it twice.
+
+---
+
+### 25. Thematic Over-Explanation (narrating the point instead of landing it)
+
+**Problem:** The draft spells out its own moral or lesson in narrator voice instead of letting the specifics carry it. StoryScope: AI states the theme directly ~77% of the time vs ~52% for humans.
+
+**AI pattern:** "This shows the importance of building systems." / "The lesson here is clear." / "This is what real leadership looks like."
+**Human alternative:** State the fact and stop. Let the reader draw the conclusion. If a line tells the reader what to feel or conclude, cut it and trust the specific before it.
+
+**Before:**
+> We placed 200 engineers and 98% stayed. This shows how much assessment quality matters for retention.
+
+**After:**
+> We placed 200 engineers. 98% were still in the role 18 months later.
+
+---
+
+### 26. Uniform Escalation / Flat Emotional Pacing  ⚠️ Claude's signature tell
+
+**Problem:** Every paragraph carries the same weight and intensity climbs in a smooth monotonic line. Human writing spikes, drops, and lands the odd anti-climax or lull between hits.
+
+**AI pattern:** point → slightly bigger point → slightly bigger point → biggest point → conclusion, evenly spaced.
+**Human alternative:** Vary it. A short flat line after a big one. A quiet aside. A hard stop. Let one beat hit harder than the rest instead of a smooth ramp.
+
+**Check:** picture the draft's intensity as a graph. If it's a straight diagonal, break it — add a lull, or reorder so the strongest beat is not simply "last."
+
+---
+
+### 27. Linear Causal Chain / No Digression
+
+**Problem:** The piece marches intro → body → conclusion in a perfectly straight line, every sentence dutifully advancing the argument. Humans double back, digress, and re-contextualize — the callback ("a week ago I posted…"), the tangent that earns its place.
+
+**AI pattern:** zero loose threads, zero detours, relentless forward motion.
+**Human alternative:** Allow one genuine digression or callback. Fold an earlier point back in later with new meaning. Not every sentence has to advance the thesis.
+
+---
+
+### 28. Over-Certain, All-Threads-Tied Conclusion
+
+**Problem:** The ending resolves everything with a tidy bow. This is the structural cousin of #24, but about the *shape of closure* rather than positivity. StoryScope: AI endings resolve with higher certainty; human endings tolerate ambiguity and leave subplots open.
+
+**AI pattern:** a summarizing final paragraph that restates the piece and neatly closes every loop.
+**Human alternative:** End on a specific, a question, or an open loop. Do not tie every thread. A post can stop on its sharpest line instead of a resolution.
+
+---
+
+### 29. Low Structural Rarity ("machine-made shape")
+
+**Problem:** StoryScope's strongest finding — outputs from *different* AI models cluster in the **same region of narrative space**: one recognizable, predictable document skeleton, regardless of topic. Human structures are idiosyncratic and occupy distinct regions.
+
+**AI pattern:** a skeleton you could lift wholesale onto any other topic (hook → three evenly-sized points → tidy close).
+**Human alternative:** let the structure be shaped by *this* topic's specifics. **Test:** could this exact outline host a completely different subject with only the nouns swapped? If yes, the shape is generic — break the mould (uneven sections, an unexpected order, a structural risk).
+
+---
+
+### 30. Everything-Upfront vs Progressive Reveal
+
+**Problem:** AI front-loads all context and definitions, then proceeds. Humans reveal as needed and let the idea build, introducing detail at the moment it earns attention.
+
+**AI pattern:** a full setup/background block before anything actually happens.
+**Human alternative:** start closer to the action. Release context in the line where it matters, not all at the top.
+
+---
+
+### 31. Generic vs Specific Reference
+
+**Problem:** AI gestures at vague authorities ("studies show", "a well-known framework", "a famous investor"). StoryScope: humans use specific, real allusions at nearly double the rate (~47% vs ~24%). This is the structural mirror of the workspace's real-names / real-numbers rule.
+
+**AI pattern:** "research suggests", "experts agree", "a leading tool".
+**Human alternative:** name it. Pew's 8% vs 15%. Hormozi's 1-10 close. Clay, not "an enrichment tool." The specific *is* the credibility.
+
+---
+
+**Fiction-only tells NOT applied here:** StoryScope also identifies character-agency ambiguity, dream-sequence over-indexing (GPT's fingerprint), fourth-wall breaks, and social-network complexity. These are narrative-fiction signals that do not generalize to business/marketing prose, so they are intentionally excluded from this pass. If this skill is ever pointed at fiction, pull them back in from the paper.
+
+---
+
 ## Process
 
+Run the humanizer as **two distinct passes, in order**. Do not merge them — a draft can pass Pass 1 completely and still fail Pass 2.
+
+### Pass 1 — Sentence & word level (patterns 1–24)
 1. Read the input text carefully
-2. Identify all instances of the patterns above
+2. Identify all instances of patterns 1–24 above
 3. Rewrite each problematic section
 4. Ensure the revised text:
    - Sounds natural when read aloud
@@ -401,11 +494,22 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
    - Uses specific details over vague claims
    - Maintains appropriate tone for context
    - Uses simple constructions (is/are/has) where appropriate
-5. Present a draft humanized version
-6. Prompt: "What makes the below so obviously AI generated?"
-7. Answer briefly with the remaining tells (if any)
-8. Prompt: "Now make it not obviously AI generated."
-9. Present the final version (revised after the audit)
+
+### Pass 2 — Structural sweep (StoryScope, patterns 25–31)
+5. Re-read the Pass 1 output for **shape, not wording**, and answer each:
+   - Is the point narrated or landed? (#25)
+   - Is the intensity a straight diagonal line? (#26 — Claude's tell, check twice)
+   - Does every sentence march forward with no digression or callback? (#27)
+   - Does it close with a tidy all-threads-tied bow? (#28)
+   - Could this exact skeleton host any other topic with the nouns swapped? (#29)
+   - Is all context front-loaded? (#30)
+   - Are references vague instead of named-specific? (#31)
+6. Restructure wherever an answer is "yes" — reorder beats, break the arc, cut the resolving paragraph, add a callback, name the specifics.
+
+### Final anti-AI audit
+7. Present a draft humanized version
+8. Prompt: "What makes the below so obviously AI generated?" — answer briefly, covering BOTH wording tells AND structural shape
+9. Prompt: "Now make it not obviously AI generated." and present the final version (revised after the audit)
 
 ## Output Format
 

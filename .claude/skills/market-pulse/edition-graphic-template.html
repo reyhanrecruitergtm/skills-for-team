@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #000; }
+.canvas {
+  width: 1080px; height: 1350px;
+  background: #0d1117;
+  position: relative; overflow: hidden;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+  display: flex; flex-direction: column;
+}
+.canvas::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, #1b2330 0.8px, transparent 0.8px);
+  background-size: 50px 50px;
+  opacity: 0.4; pointer-events: none;
+}
+.top { padding: 80px 90px 0; position: relative; z-index: 2; }
+.badge {
+  display: inline-block; padding: 12px 26px; border-radius: 999px;
+  border: 1px solid rgba(0,200,255,0.5); color: #00C8FF;
+  font-size: 17px; letter-spacing: 3px; font-weight: 700; text-transform: uppercase;
+}
+h1 {
+  margin-top: 28px;
+  font-size: 88px; line-height: 1.04; font-weight: 800; letter-spacing: -2px;
+}
+h1 span { color: #00C8FF; }
+.sub {
+  margin-top: 18px;
+  font-size: 23px; line-height: 1.5; color: rgba(255,255,255,0.6); max-width: 760px;
+}
+.ecg { margin: 10px 0 0; position: relative; z-index: 2; }
+.inside { padding: 6px 90px 0; position: relative; z-index: 2; }
+.inside-label {
+  font-size: 17px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); font-weight: 700; margin-bottom: 18px;
+}
+.item {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 24px; line-height: 1.4; color: rgba(255,255,255,0.92);
+}
+.item:last-child { border-bottom: none; }
+.tick { color: #00C8FF; font-weight: 800; min-width: 30px; }
+.bottom {
+  margin-top: 36px; padding: 0 90px 54px;
+  display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2;
+}
+.cta {
+  padding: 20px 44px; border-radius: 999px;
+  background: #00C8FF; color: #06131c;
+  font-size: 22px; font-weight: 800;
+  box-shadow: 0 0 40px rgba(0,200,255,0.35);
+}
+.brand-col { text-align: right; }
+.url { font-size: 18px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+.brand { font-size: 24px; font-weight: 800; color: #00C8FF; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="top">
+    <div class="badge">August 2026 Edition &middot; Free</div>
+    <h1>The Recruitment<br>Market <span>Pulse</span></h1>
+    <div class="sub">One monthly report on where the recruitment market is actually heading.</div>
+  </div>
+  <div class="ecg">
+    <svg width="1080" height="130" viewBox="0 0 1080 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow" x="-20%" y="-100%" width="140%" height="300%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#00C8FF" stop-opacity="0"/>
+          <stop offset="0.12" stop-color="#00C8FF" stop-opacity="1"/>
+          <stop offset="0.88" stop-color="#00C8FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#00C8FF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polyline filter="url(#glow)" fill="none" stroke="url(#fade)" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"
+        points="0,65 250,65 290,65 320,20 355,110 390,40 415,65 640,65 680,65 710,28 745,104 780,48 805,65 1080,65"/>
+      <circle cx="805" cy="65" r="6" fill="#00C8FF" filter="url(#glow)"/>
+    </svg>
+  </div>
+  <div class="inside">
+    <div class="inside-label">Inside this edition</div>
+    <div class="item"><div class="tick">&#10004;</div><div>50% of recruiters find Claude Code easier to understand and use than Clay or n8n</div></div>
+    <div class="item"><div class="tick">&#10004;</div><div>Greg Savage on why the contingent, multi-listed perm market is over</div></div>
+    <div class="item"><div class="tick">&#10004;</div><div>The fee model scoreboard: contingent vs retained vs embedded vs subscription</div></div>
+    <div class="item"><div class="tick">&#10004;</div><div>AI cut sourcing costs 35% but cost-per-hire only 12%. That gap is where the money moved</div></div>
+    <div class="item"><div class="tick">&#10004;</div><div>The four industries most open to working with agencies next quarter</div></div>
+    <div class="item"><div class="tick">&#10004;</div><div>Four moves for agency owners to make this month</div></div>
+  </div>
+  <div class="bottom">
+    <div class="cta">Read it free</div>
+    <div class="brand-col">
+      <div class="url">recruitergtm.com/market-pulse</div>
+      <div class="brand">RecruiterGTM</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
